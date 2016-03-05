@@ -9,7 +9,7 @@ Base = declarative_base()
 
 
 class CarPrice(Base):
-    __tablename__ = 'autohome_car_price_test'
+    __tablename__ = 'autohome_car_price'
 
     spec_id = Column(String, primary_key=True)
     city_id = Column(String, primary_key=True)
