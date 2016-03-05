@@ -10,7 +10,7 @@ FILE_PATH = 'bloom.data'
 class BloomDupeFilter(BaseDupeFilter):
     def __init__(self, path=None):
         self.file = FILE_PATH
-        self.fingerprints = BloomFilter(10000000, 0.00001)
+        self.fingerprints = BloomFilter(5000000, 0.00001)
 
     @classmethod
     def from_settings(cls, settings):
