@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import json
+
+import requests
 import scrapy
 from scrapy.spiders import CrawlSpider
-import requests, json
 
 from analysis_spider.items import CarPriceItem, CityItem, SpecItem
 
@@ -27,26 +29,28 @@ class AutohomePriceSpider(CrawlSpider):
     # 获取所有城市信息
     def parse_citys(self, response):
         provinces = json.loads(response.body_as_unicode())['result']['provinces']
+        city_list = []
 
-        citys = []
         for province in provinces:
             for city in province['citys']:
-                citys.append(city)
-
-                i = CityItem()
-
-                i['province_id'] = province['id']
-                i['province_name'] = province['name']
-                i['province_first_letter'] = province['firstletter']
-                i['city_id'] = city['id']
-                i['city_name'] = city['name']
-                i['city_first_letter'] = city['firstletter']
-
-                yield i
+                city_list.append(city)
+                yield self.parse_item_city(city, province)
 
         url = 'http://223.99.255.20/app.api.autohome.com.cn/autov5.4.0/cars/brands-pm2-ts0.json'
+
         # 获取所有品牌
-        yield scrapy.Request(url, callback=self.parse_brands, meta={'citys': citys})
+        yield scrapy.Request(url, callback=self.parse_brands, meta={'citys': city_list})
+
+    @staticmethod
+    def parse_item_city(city, province):
+        i = CityItem()
+        i['province_id'] = province['id']
+        i['province_name'] = province['name']
+        i['province_first_letter'] = province['firstletter']
+        i['city_id'] = city['id']
+        i['city_name'] = city['name']
+        i['city_first_letter'] = city['firstletter']
+        return i
 
     # 根据汽车品牌获取全部汽车型号
     def parse_brands(self, response):
@@ -64,16 +68,16 @@ class AutohomePriceSpider(CrawlSpider):
                 # 获取全部车型
                 yield scrapy.Request(url, callback=self.parse_series, meta=meta)
 
-            return  # for test
-
     # 根据汽车型号获取全部城市的详情
     def parse_series(self, response):
         fcts = json.loads(response.body_as_unicode())['result']['fctlist']
+
         for fct in fcts:
             series = fct['serieslist']
+
             for sis in series:
                 meta = response.meta
-                meta.update({'series_id': sis['id'], 'series_name': sis['name'], 'brand_img_url': sis['imgurl']})
+                meta.update({'series_id': sis['id'], 'series_name': sis['name'], 'series_img_url': sis['imgurl']})
 
                 # 遍历所有城市，获取该型号汽车详情
                 for city in meta['citys']:
@@ -81,7 +85,6 @@ class AutohomePriceSpider(CrawlSpider):
                     url = 'http://223.99.255.20/app.api.autohome.com.cn/autov5.4.0/cars/' \
                           'seriessummary-pm2-s{0}-t0x000c-c{1}.json'.format(sis['id'], city['id'])
                     yield scrapy.Request(url, callback=self.parse_series_detail, meta=meta)
-                return  # for test
 
     # 根据汽车详情页获取报价
     def parse_series_detail(self, response):
@@ -89,25 +92,32 @@ class AutohomePriceSpider(CrawlSpider):
 
         # 遍历所有型号，获取报价
         engines = json.loads(response.body_as_unicode())['result']['enginelist']
+
         for engine in engines:
             specs = engine['speclist']
+
             for spec in specs:
-                i = CarPriceItem()
+                yield self.parse_item_price(meta, spec)
+                yield self.parse_item_spec(meta, spec)
 
-                i['spec_id'] = spec['id']
-                i['city_id'] = meta['city_id']
-                i['price'] = spec['price']
-                i['price_min'] = spec['minprice']
+    @staticmethod
+    def parse_item_spec(meta, spec):
+        si = SpecItem()
+        si['brand_id'] = meta['brand_id']
+        si['brand_name'] = meta['brand_name']
+        si['brand_img_url'] = meta['brand_img_url']
+        si['series_id'] = meta['series_id']
+        si['series_name'] = meta['series_name']
+        si['series_img_url'] = meta['series_img_url']
+        si['spec_id'] = spec['id']
+        si['spec_name'] = spec['name']
+        return si
 
-                yield i
-
-                si = SpecItem()
-
-                si['brand_id'] = meta['brand_id']
-                si['brand_name'] = meta['brand_name']
-                si['series_id'] = meta['series_id']
-                si['series_name'] = meta['series_name']
-                si['spec_id'] = spec['id']
-                si['spec_name'] = spec['name']
-
-                yield si
+    @staticmethod
+    def parse_item_price(meta, spec):
+        i = CarPriceItem()
+        i['spec_id'] = spec['id']
+        i['city_id'] = meta['city_id']
+        i['price'] = spec['price']
+        i['price_min'] = spec['minprice']
+        return i

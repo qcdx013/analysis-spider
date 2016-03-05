@@ -7,12 +7,14 @@
 
 import re
 
+from scrapy.exceptions import DropItem
+
 from items import CarPriceItem, SpecItem, CityItem
 from model.autohome import CarPrice, Spec, City
 from model.config import DBSession
 
 # 缓冲区大小，批量插入数据库
-BUF_SIZE_000 = 5000
+BUF_SIZE_000 = 2000
 
 
 # 存储到数据库
@@ -39,6 +41,7 @@ class DataBasePipeline(object):
 
         if self.count <= 0:
             self.session.commit()
+            self.count = BUF_SIZE_000
 
         return item
 
@@ -59,6 +62,7 @@ class DataBasePipeline(object):
 
         if self.count <= 0:
             self.session.commit()
+            self.count = BUF_SIZE_000
 
         return item
 
@@ -83,6 +87,7 @@ class DataBasePipeline(object):
 
         if self.count <= 0:
             self.session.commit()
+            self.count = BUF_SIZE_000
 
         return item
 
@@ -98,11 +103,20 @@ class DataBasePipeline(object):
         self.session.commit()
         self.session.close()
 
-# # 使用Redis去重
-# class DuplicatesPipeline(object):
-#     def process_item(self, item, spider):
-#         if Redis.exists('url:%s' % item['url']):
-#             raise DropItem("Duplicate item found: %s" % item)
-#         else:
-#             Redis.set('url:%s' % item['url'], item['title'])
-#             return item
+
+# 车型去重
+class DuplicatesPipeline(object):
+    # 存储车型Id，避免重复入库
+    series = set()
+
+    def process_item(self, item, spider):
+        if isinstance(item, SpecItem):
+            sid = item['spec_id']
+            if sid in DuplicatesPipeline.series:
+                # raise DropItem("Duplicate series found: {0}".format(sid))
+                pass
+            else:
+                DuplicatesPipeline.series.add(sid)
+                return item
+        else:
+            return item

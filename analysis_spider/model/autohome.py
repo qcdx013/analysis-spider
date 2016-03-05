@@ -15,7 +15,7 @@ class CarPrice(Base):
     city_id = Column(String, primary_key=True)
     price = Column(Float)
     price_min = Column(Float)
-    datetime = Column(DateTime, default=datetime.datetime.now())
+    datetime = Column(DateTime, default=datetime.datetime.now(), primary_key=True)
 
 
 class Spec(Base):
