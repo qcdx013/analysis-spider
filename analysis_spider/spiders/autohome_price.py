@@ -34,7 +34,8 @@ class AutohomePriceSpider(CrawlSpider):
         for province in provinces:
             for city in province['citys']:
                 city_list.append(city)
-                yield self.parse_item_city(city, province)
+                # sometimes we needn't parse city items
+                # yield self.parse_item_city(city, province)
 
         url = 'http://223.99.255.20/app.api.autohome.com.cn/autov5.4.0/cars/brands-pm2-ts0.json'
 
@@ -98,7 +99,8 @@ class AutohomePriceSpider(CrawlSpider):
 
             for spec in specs:
                 yield self.parse_item_price(meta, spec)
-                yield self.parse_item_spec(meta, spec)
+                # sometimes we needn't parse spec items
+                # yield self.parse_item_spec(meta, spec)
 
     @staticmethod
     def parse_item_spec(meta, spec):
