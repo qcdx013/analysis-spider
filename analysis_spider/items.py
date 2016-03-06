@@ -18,7 +18,9 @@ class CarPriceItem(scrapy.Item):
 class SpecItem(scrapy.Item):
     brand_id = scrapy.Field()
     brand_name = scrapy.Field()
+    brand_first_letter = scrapy.Field()
     brand_img_url = scrapy.Field()
+    fct_name = scrapy.Field()
     series_id = scrapy.Field()
     series_name = scrapy.Field()
     series_img_url = scrapy.Field()

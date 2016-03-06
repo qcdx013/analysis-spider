@@ -59,12 +59,14 @@ class AutohomePriceSpider(CrawlSpider):
         brands = json.loads(response.body_as_unicode())['result']['brandlist']
 
         for brand in brands:
+            brand_first_letter = brand['letter']
             bnd_list = brand['list']
 
             for bnd in bnd_list:
                 url = 'http://223.99.255.20/app.api.autohome.com.cn/autov5.4.0/cars/seriesprice-pm2-b{0}-t2.json'.format(
                         bnd['id'])
-                meta.update({'brand_id': bnd['id'], 'brand_name': bnd['name'], 'brand_img_url': bnd['imgurl']})
+                meta.update({'brand_id': bnd['id'], 'brand_name': bnd['name'],
+                             'brand_first_letter': brand_first_letter, 'brand_img_url': bnd['imgurl']})
 
                 # 获取全部车型
                 yield scrapy.Request(url, callback=self.parse_series, meta=meta)
@@ -74,11 +76,13 @@ class AutohomePriceSpider(CrawlSpider):
         fcts = json.loads(response.body_as_unicode())['result']['fctlist']
 
         for fct in fcts:
+            fct_name = fct['name']
             series = fct['serieslist']
 
             for sis in series:
                 meta = response.meta
-                meta.update({'series_id': sis['id'], 'series_name': sis['name'], 'series_img_url': sis['imgurl']})
+                meta.update({'fct_name': fct_name, 'series_id': sis['id'],
+                             'series_name': sis['name'], 'series_img_url': sis['imgurl']})
 
                 # 遍历所有城市，获取该型号汽车详情
                 for city in meta['citys']:
@@ -86,6 +90,7 @@ class AutohomePriceSpider(CrawlSpider):
                     url = 'http://223.99.255.20/app.api.autohome.com.cn/autov5.4.0/cars/' \
                           'seriessummary-pm2-s{0}-t0x000c-c{1}.json'.format(sis['id'], city['id'])
                     yield scrapy.Request(url, callback=self.parse_series_detail, meta=meta)
+                    break  # for test
 
     # 根据汽车详情页获取报价
     def parse_series_detail(self, response):
@@ -98,16 +103,18 @@ class AutohomePriceSpider(CrawlSpider):
             specs = engine['speclist']
 
             for spec in specs:
-                yield self.parse_item_price(meta, spec)
+                # yield self.parse_item_price(meta, spec)
                 # sometimes we needn't parse spec items
-                # yield self.parse_item_spec(meta, spec)
+                yield self.parse_item_spec(meta, spec)
 
     @staticmethod
     def parse_item_spec(meta, spec):
         si = SpecItem()
         si['brand_id'] = meta['brand_id']
         si['brand_name'] = meta['brand_name']
+        si['brand_first_letter'] = meta['brand_first_letter']
         si['brand_img_url'] = meta['brand_img_url']
+        si['fct_name'] = meta['fct_name']
         si['series_id'] = meta['series_id']
         si['series_name'] = meta['series_name']
         si['series_img_url'] = meta['series_img_url']

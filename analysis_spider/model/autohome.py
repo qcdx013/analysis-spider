@@ -23,7 +23,9 @@ class Spec(Base):
 
     brand_id = Column(String)
     brand_name = Column(String)
+    brand_first_letter = Column(String)
     brand_img_url = Column(String)
+    fct_name = Column(String)
     series_id = Column(String)
     series_name = Column(String)
     series_img_url = Column(String)

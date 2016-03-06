@@ -49,7 +49,9 @@ class DataBasePipeline(object):
         s = Spec(
                 brand_id=item['brand_id'],
                 brand_name=item['brand_name'].encode('utf-8'),
+                brand_first_letter=item['brand_first_letter'].encode('utf-8'),
                 brand_img_url=item['brand_img_url'].encode('utf-8'),
+                fct_name=item['fct_name'].encode('utf-8'),
                 series_id=item['series_id'],
                 series_name=item['series_name'].encode('utf-8'),
                 series_img_url=item['series_img_url'].encode('utf-8'),

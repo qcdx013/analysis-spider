@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50627
 File Encoding         : 65001
 
-Date: 2016-03-05 12:01:41
+Date: 2016-03-06 14:39:50
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -22,7 +22,9 @@ DROP TABLE IF EXISTS `t_specs`;
 CREATE TABLE `t_specs` (
   `brand_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `brand_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `brand_first_letter` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `brand_img_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fct_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `series_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `series_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `series_img_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
