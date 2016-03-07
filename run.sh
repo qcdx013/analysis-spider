@@ -1,3 +1,3 @@
 #!/bin/bash
 
-nohup python main.py > nohup.price.20160305.out 2>&1 &
+nohup python main.py > nohup_price_`date +%Y%m%d`.out 2>&1 &
