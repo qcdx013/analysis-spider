@@ -1,2 +1,2 @@
-# analysis_spider
+# analysis-spider
 A spider code by scrapy.

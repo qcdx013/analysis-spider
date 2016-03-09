@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for analysis_spider project
+# Scrapy settings for analysis-spider project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -11,15 +11,15 @@
 
 LOG_LEVEL = 'INFO'
 
-BOT_NAME = 'analysis_spider'
+BOT_NAME = 'analysis-spider'
 
-SPIDER_MODULES = ['analysis_spider.spiders']
-NEWSPIDER_MODULE = 'analysis_spider.spiders'
+SPIDER_MODULES = ['analysis-spider.spiders']
+NEWSPIDER_MODULE = 'analysis-spider.spiders'
 
-DUPEFILTER_CLASS = "analysis_spider.filter.BloomDupeFilter"
+DUPEFILTER_CLASS = "analysis-spider.filter.BloomDupeFilter"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-# USER_AGENT = 'analysis_spider (+http://www.yourdomain.com)'
+# USER_AGENT = 'analysis-spider (+http://www.yourdomain.com)'
 # USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
 USER_AGENT = 'Android 4.4.4 autohome 5.4.0 Android'
 
@@ -48,13 +48,13 @@ DEFAULT_REQUEST_HEADERS = {
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 # SPIDER_MIDDLEWARES = {
-#    'analysis_spider.middlewares.MyCustomSpiderMiddleware': 543,
+#    'analysis-spider.middlewares.MyCustomSpiderMiddleware': 543,
 # }
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 # DOWNLOADER_MIDDLEWARES = {
-#    'analysis_spider.middlewares.MyCustomDownloaderMiddleware': 543,
+#    'analysis-spider.middlewares.MyCustomDownloaderMiddleware': 543,
 # }
 
 # Enable or disable extensions
@@ -66,9 +66,9 @@ DEFAULT_REQUEST_HEADERS = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'analysis_spider.pipelines.DuplicatesPipeline': 100,
-    # 'analysis_spider.pipelines.JsonWriterPipeline': 200,
-    'analysis_spider.pipelines.DataBasePipeline': 300,
+    'analysis-spider.pipelines.DuplicatesPipeline': 100,
+    # 'analysis-spider.pipelines.JsonWriterPipeline': 200,
+    'analysis-spider.pipelines.DataBasePipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
