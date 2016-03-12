@@ -24,7 +24,7 @@ DUPEFILTER_CLASS = "auto_spider.filter.BloomDupeFilter"
 USER_AGENT = 'Android 4.4.4 autohome 5.4.0 Android'
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS=32
+CONCURRENT_REQUESTS = 16
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
@@ -66,7 +66,7 @@ DEFAULT_REQUEST_HEADERS = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'auto_spider.pipelines.DuplicatesPipeline': 100,
+    # 'auto_spider.pipelines.DuplicatesPipeline': 100,
     # 'auto_spider.pipelines.JsonWriterPipeline': 200,
     'auto_spider.pipelines.DataBasePipeline': 300,
 }

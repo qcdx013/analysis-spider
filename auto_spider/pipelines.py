@@ -12,10 +12,11 @@ from scrapy.exceptions import DropItem
 from items import CarPriceItem, SpecItem, CityItem
 from model.auto_price import CarPrice, Spec, City
 from model.config import DBSession
+
 from model.config import r
 
 # 缓冲区大小，批量插入数据库
-BUF_SIZE_000 = 2000
+BUF_SIZE_000 = 5000
 
 
 # 存储到数据库
