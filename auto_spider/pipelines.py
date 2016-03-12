@@ -10,8 +10,9 @@ import re
 from scrapy.exceptions import DropItem
 
 from items import CarPriceItem, SpecItem, CityItem
-from model.autohome import CarPrice, Spec, City
+from model.auto_price import CarPrice, Spec, City
 from model.config import DBSession
+from model.config import r
 
 # 缓冲区大小，批量插入数据库
 BUF_SIZE_000 = 2000
@@ -108,17 +109,12 @@ class DataBasePipeline(object):
 
 # 车型去重
 class DuplicatesPipeline(object):
-    # 存储车型Id，避免重复入库
-    series = set()
-
     def process_item(self, item, spider):
-        if isinstance(item, SpecItem):
-            sid = item['spec_id']
-            if sid in DuplicatesPipeline.series:
-                # raise DropItem("Duplicate series found: {0}".format(sid))
-                pass
-            else:
-                DuplicatesPipeline.series.add(sid)
-                return item
-        else:
+        if not isinstance(item, SpecItem):
             return item
+
+        if r.hset('spider:auto:duplicate:spec', item['spec_id'], '') == 1:
+            return item
+
+        pass  # ignore
+        # raise DropItem("Duplicate series found: {0}".format(sid))

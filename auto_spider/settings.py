@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for analysis-spider project
+# Scrapy settings for auto_spider project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -11,20 +11,20 @@
 
 LOG_LEVEL = 'INFO'
 
-BOT_NAME = 'analysis-spider'
+BOT_NAME = 'auto_spider'
 
-SPIDER_MODULES = ['analysis-spider.spiders']
-NEWSPIDER_MODULE = 'analysis-spider.spiders'
+SPIDER_MODULES = ['auto_spider.spiders']
+NEWSPIDER_MODULE = 'auto_spider.spiders'
 
-DUPEFILTER_CLASS = "analysis-spider.filter.BloomDupeFilter"
+DUPEFILTER_CLASS = "auto_spider.filter.BloomDupeFilter"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-# USER_AGENT = 'analysis-spider (+http://www.yourdomain.com)'
+# USER_AGENT = 'auto_spider (+http://www.yourdomain.com)'
 # USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
 USER_AGENT = 'Android 4.4.4 autohome 5.4.0 Android'
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-# CONCURRENT_REQUESTS=32
+CONCURRENT_REQUESTS=32
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
@@ -48,13 +48,13 @@ DEFAULT_REQUEST_HEADERS = {
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 # SPIDER_MIDDLEWARES = {
-#    'analysis-spider.middlewares.MyCustomSpiderMiddleware': 543,
+#    'auto_spider.middlewares.MyCustomSpiderMiddleware': 543,
 # }
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 # DOWNLOADER_MIDDLEWARES = {
-#    'analysis-spider.middlewares.MyCustomDownloaderMiddleware': 543,
+#    'auto_spider.middlewares.MyCustomDownloaderMiddleware': 543,
 # }
 
 # Enable or disable extensions
@@ -66,9 +66,9 @@ DEFAULT_REQUEST_HEADERS = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'analysis-spider.pipelines.DuplicatesPipeline': 100,
-    # 'analysis-spider.pipelines.JsonWriterPipeline': 200,
-    'analysis-spider.pipelines.DataBasePipeline': 300,
+    'auto_spider.pipelines.DuplicatesPipeline': 100,
+    # 'auto_spider.pipelines.JsonWriterPipeline': 200,
+    'auto_spider.pipelines.DataBasePipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

@@ -6,11 +6,11 @@ import requests
 import scrapy
 from scrapy.spiders import CrawlSpider
 
-from analysis_spider.items import CarPriceItem, CityItem, SpecItem
+from ..items import CarPriceItem, CityItem, SpecItem
 
 
 class AutohomePriceSpider(CrawlSpider):
-    name = 'autohome_price'
+    name = 'autohome-price'
     allowed_domains = ['223.99.255.20']
 
     headers = {
