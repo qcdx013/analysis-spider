@@ -61,16 +61,16 @@ class PriceDataBasePipeline(object):
 
 class CityDataBasePipeline(object):
     def __init__(self):
-        self.conn = engine.connect()
         self.session = DBSession()
         self.count = BUF
 
     def open_spider(self, spider):
         Base.metadata.tables[City.__tablename__].create(checkfirst=True)
-        self.conn.execute(
+        conn = engine.connect()
+        conn.execute(
                 'ALTER TABLE {0} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'.format(
                         City.__tablename__))
-        self.conn.execute('TRUNCATE TABLE {0}'.format(City.__tablename__))
+        conn.execute('TRUNCATE TABLE {0}'.format(City.__tablename__))
 
     def process_item(self, item, spider):
         if not isinstance(item, CityItem):
@@ -99,7 +99,8 @@ class CityDataBasePipeline(object):
 
         if self.session.query(City).count() > 0:
             # rename tables
-            self.conn.execute(
+            conn = engine.connect()
+            conn.execute(
                     'RENAME TABLE t_citys TO t_citys_000, {0} TO t_citys, t_citys_000 TO {0}'.format(
                             City.__tablename__))
 
@@ -107,16 +108,16 @@ class CityDataBasePipeline(object):
 class SpecDataBasePipeline(object):
     def __init__(self):
         self.fingerprints = BloomFilter(10000, 0.00001)
-        self.conn = engine.connect()
         self.session = DBSession()
         self.count = BUF
 
     def open_spider(self, spider):
         Base.metadata.tables[Spec.__tablename__].create(checkfirst=True)
-        self.conn.execute(
+        conn = engine.connect()
+        conn.execute(
                 'ALTER TABLE {0} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'.format(
                         Spec.__tablename__))
-        self.conn.execute('TRUNCATE TABLE {0}'.format(Spec.__tablename__))
+        conn.execute('TRUNCATE TABLE {0}'.format(Spec.__tablename__))
 
     def process_item(self, item, spider):
         if not isinstance(item, SpecItem):
@@ -155,7 +156,8 @@ class SpecDataBasePipeline(object):
 
         if self.session.query(Spec).count() > 0:
             # rename tables
-            self.conn.execute(
+            conn = engine.connect()
+            conn.execute(
                     'RENAME TABLE t_specs TO t_specs_000, {0} TO t_specs, t_specs_000 TO {0}'.format(
                             Spec.__tablename__))
 
