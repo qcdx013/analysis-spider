@@ -8,10 +8,11 @@
 import re
 
 from pybloom import BloomFilter
+from sqlalchemy.orm import sessionmaker
 
 from items import CarPriceItem, SpecItem, CityItem
 from model.auto_price import CarPrice, Spec, City, Base
-from model.config import DBSession, engine
+from model.config import engine
 
 # 缓冲区大小，批量插入数据库
 BUF = 100000
@@ -20,7 +21,7 @@ BUF = 100000
 # 存储到数据库
 class PriceDataBasePipeline(object):
     def __init__(self):
-        self.session = DBSession()
+        self.session = sessionmaker(bind=engine)
         self.count = BUF
 
     def open_spider(self, spider):
@@ -61,7 +62,7 @@ class PriceDataBasePipeline(object):
 
 class CityDataBasePipeline(object):
     def __init__(self):
-        self.session = DBSession()
+        self.session = sessionmaker(bind=engine)
         self.count = BUF
 
     def open_spider(self, spider):
@@ -108,7 +109,7 @@ class CityDataBasePipeline(object):
 class SpecDataBasePipeline(object):
     def __init__(self):
         self.fingerprints = BloomFilter(10000, 0.00001)
-        self.session = DBSession()
+        self.session = sessionmaker(bind=engine)
         self.count = BUF
 
     def open_spider(self, spider):
