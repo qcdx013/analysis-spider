@@ -5,6 +5,15 @@ from scrapy.utils.project import get_project_settings
 
 from auto_spider.spiders.auto_price import AutohomePriceSpider
 
+# fix error on amazon aws ec2
+from scrapy import optional_features
+
+try:
+    optional_features.remove('boto')
+except:
+    # ignore
+    print 'remove boto failed.'
+
 process = CrawlerProcess(get_project_settings())
 
 process.crawl(AutohomePriceSpider)

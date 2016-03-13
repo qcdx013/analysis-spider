@@ -10,8 +10,8 @@ import re
 from pybloom import BloomFilter
 
 from items import CarPriceItem, SpecItem, CityItem
-from model.auto_price import CarPrice, Spec, City
-from model.config import DBSession, engine, metadata
+from model.auto_price import CarPrice, Spec, City, Base
+from model.config import DBSession, engine
 
 # 缓冲区大小，批量插入数据库
 BUF = 100000
@@ -65,7 +65,7 @@ class CityDataBasePipeline(object):
         self.count = BUF
 
     def open_spider(self, spider):
-        metadata.create_all(tables=[City], checkfirst=True)
+        Base.metadata.tables[City.__tablename__].create()
 
     def process_item(self, item):
         if not isinstance(item, CityItem):
@@ -106,7 +106,7 @@ class SpecDataBasePipeline(object):
         self.count = BUF
 
     def open_spider(self, spider):
-        metadata.create_all(tables=[Spec], checkfirst=True)
+        Base.metadata.tables[Spec.__tablename__].create()
 
     def process_item(self, item):
         if not isinstance(item, SpecItem):
