@@ -26,7 +26,7 @@ class PriceDataBasePipeline(object):
     def open_spider(self, spider):
         pass
 
-    def process_item(self, item):
+    def process_item(self, item, spider):
         if not isinstance(item, CarPriceItem):
             return item
 
@@ -67,7 +67,7 @@ class CityDataBasePipeline(object):
     def open_spider(self, spider):
         Base.metadata.tables[City.__tablename__].create()
 
-    def process_item(self, item):
+    def process_item(self, item, spider):
         if not isinstance(item, CityItem):
             return item
 
@@ -108,7 +108,7 @@ class SpecDataBasePipeline(object):
     def open_spider(self, spider):
         Base.metadata.tables[Spec.__tablename__].create()
 
-    def process_item(self, item):
+    def process_item(self, item, spider):
         if not isinstance(item, SpecItem):
             return item
 
