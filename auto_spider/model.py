@@ -2,12 +2,21 @@
 
 import datetime
 
+from auto_spider.model.config import metadata
 from sqlalchemy import Column, String, Integer, Float, DateTime
+from sqlalchemy import create_engine, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 
-from auto_spider.model.config import metadata
-
 Base = declarative_base(metadata=metadata)
+
+# 初始化数据库连接
+engine = create_engine('mysql+mysqldb://analysis:pivotal@odachi.in:3306/analysis_db', encoding='utf-8')
+
+engine.execute('SET NAMES utf8mb4')
+engine.execute('SET CHARACTER SET utf8mb4')
+engine.execute('SET character_set_connection=utf8mb4')
+
+metadata = MetaData(bind=engine)
 
 
 class CarPrice(Base):

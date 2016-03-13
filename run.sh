@@ -1,3 +1,3 @@
 #!/bin/bash
 
-nohup python main.py > /mnt/logs/spider_auto_`date +%Y%m%d`.out 2>&1 &
+nohup python main.py > /mnt/logs/spider_autohome_`date +%Y%m%d`.out 2>&1 &
