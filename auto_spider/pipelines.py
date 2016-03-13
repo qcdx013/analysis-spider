@@ -66,12 +66,9 @@ class CityDataBasePipeline(object):
 
     def open_spider(self, spider):
         Base.metadata.tables[City.__tablename__].create(checkfirst=True)
-        conn = engine.connect()
-        conn.execute(
-                'ALTER TABLE {0} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'.format(
-                        City.__tablename__))
-        conn.execute('TRUNCATE TABLE {0}'.format(City.__tablename__))
-        conn.close()
+        engine.execute('ALTER TABLE {0} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'.format(
+                City.__tablename__))
+        engine.execute('TRUNCATE TABLE {0}'.format(City.__tablename__))
 
     def process_item(self, item, spider):
         if not isinstance(item, CityItem):
@@ -100,11 +97,8 @@ class CityDataBasePipeline(object):
         self.session.close()
 
         # rename tables
-        conn = engine.connect()
-        conn.execute(
-                'RENAME TABLE t_citys TO t_citys_000, {0} TO t_citys, t_citys_000 TO {0}'.format(
-                        City.__tablename__))
-        conn.close()
+        engine.execute('RENAME TABLE t_citys TO t_citys_000, {0} TO t_citys, t_citys_000 TO {0}'.format(
+                City.__tablename__))
 
 
 class SpecDataBasePipeline(object):
@@ -115,12 +109,9 @@ class SpecDataBasePipeline(object):
 
     def open_spider(self, spider):
         Base.metadata.tables[Spec.__tablename__].create(checkfirst=True)
-        conn = engine.connect()
-        conn.execute(
-                'ALTER TABLE {0} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'.format(
-                        Spec.__tablename__))
-        conn.execute('TRUNCATE TABLE {0}'.format(Spec.__tablename__))
-        conn.close()
+        engine.execute('ALTER TABLE {0} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'.format(
+                Spec.__tablename__))
+        engine.execute('TRUNCATE TABLE {0}'.format(Spec.__tablename__))
 
     def process_item(self, item, spider):
         if not isinstance(item, SpecItem):
@@ -160,8 +151,5 @@ class SpecDataBasePipeline(object):
         self.fingerprints = None
 
         # rename tables
-        conn = engine.connect()
-        conn.execute(
-                'RENAME TABLE t_specs TO t_specs_000, {0} TO t_specs, t_specs_000 TO {0}'.format(
-                        Spec.__tablename__))
-        conn.close()
+        engine.execute('RENAME TABLE t_specs TO t_specs_000, {0} TO t_specs, t_specs_000 TO {0}'.format(
+                Spec.__tablename__))
