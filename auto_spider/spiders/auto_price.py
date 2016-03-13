@@ -78,7 +78,6 @@ class AutohomePriceSpider(CrawlSpider):
                     url = 'http://223.99.255.20/app.api.autohome.com.cn/autov5.4.0/cars/' \
                           'seriessummary-pm2-s{0}-t0x000c-c{1}.json'.format(sis['id'], city['id'])
                     yield scrapy.Request(url, callback=self.parse_series_detail, meta=meta)
-                    break  # for test
 
     # 根据汽车详情页获取报价
     def parse_series_detail(self, response):
