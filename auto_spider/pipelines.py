@@ -90,13 +90,14 @@ class CityDataBasePipeline(object):
         return item
 
     def close_spider(self, spider):
-        self.session.commit()
-        self.session.close()
-
-        if City.query.count() > 0:
+        if self.session.query(City).count() > 0:
             # rename tables
             engine.execute('DROP TABLE t_citys')
             engine.execute('ALTER TABLE {0} RENAME TO t_citys'.format(City.__tablename__))
+            engine.execute('DROP TABLE {0}'.format(City.__tablename__))
+
+        self.session.commit()
+        self.session.close()
 
 
 class SpecDataBasePipeline(object):
@@ -141,11 +142,12 @@ class SpecDataBasePipeline(object):
         return item
 
     def close_spider(self, spider):
-        self.session.commit()
-        self.session.close()
-        self.fingerprints = None
-
-        if Spec.query.count() > 0:
+        if self.session.query(Spec).count() > 0:
             # rename tables
             engine.execute('DROP TABLE t_specs')
             engine.execute('ALTER TABLE {0} RENAME TO t_specs'.format(Spec.__tablename__))
+            engine.execute('DROP TABLE {0}'.format(Spec.__tablename__))
+
+        self.session.commit()
+        self.session.close()
+        self.fingerprints = None
