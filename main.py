@@ -3,7 +3,7 @@ import requests
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
-from auto_spider.spiders.autohome import AutohomePriceSpider
+from autohome_spider.spiders.autohome import AutohomePriceSpider
 
 # fix error on amazon aws ec2
 from scrapy import optional_features

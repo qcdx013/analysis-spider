@@ -10,8 +10,8 @@ import re
 from sqlalchemy.orm import sessionmaker
 
 from items import CarPriceItem, SpecItem, CityItem
-from model.auto_price import CarPrice, Spec, City, Base
-from model.config import engine
+from model import CarPrice, Spec, City, Base
+from model import engine
 
 # 缓冲区大小，批量插入数据库
 BUF = 100000

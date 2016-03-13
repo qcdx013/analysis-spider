@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for auto_spider project
+# Scrapy settings for autohome_spider project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -11,15 +11,15 @@
 
 LOG_LEVEL = 'INFO'
 
-BOT_NAME = 'auto_spider'
+BOT_NAME = 'autohome_spider'
 
-SPIDER_MODULES = ['auto_spider.spiders']
-NEWSPIDER_MODULE = 'auto_spider.spiders'
+SPIDER_MODULES = ['autohome_spider.spiders']
+NEWSPIDER_MODULE = 'autohome_spider.spiders'
 
-DUPEFILTER_CLASS = "auto_spider.filter.BloomDupeFilter"
+DUPEFILTER_CLASS = "autohome_spider.filter.BloomDupeFilter"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-# USER_AGENT = 'auto_spider (+http://www.yourdomain.com)'
+# USER_AGENT = 'autohome_spider (+http://www.yourdomain.com)'
 # USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
 USER_AGENT = 'Android 4.4.4 autohome 5.4.0 Android'
 
@@ -48,13 +48,13 @@ DEFAULT_REQUEST_HEADERS = {
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 # SPIDER_MIDDLEWARES = {
-#    'auto_spider.middlewares.MyCustomSpiderMiddleware': 543,
+#    'autohome_spider.middlewares.MyCustomSpiderMiddleware': 543,
 # }
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 # DOWNLOADER_MIDDLEWARES = {
-#    'auto_spider.middlewares.MyCustomDownloaderMiddleware': 543,
+#    'autohome_spider.middlewares.MyCustomDownloaderMiddleware': 543,
 # }
 
 # Enable or disable extensions
@@ -66,9 +66,9 @@ DEFAULT_REQUEST_HEADERS = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'auto_spider.pipelines.PriceDataBasePipeline': 300,
-    'auto_spider.pipelines.SpecDataBasePipeline': 400,
-    # 'auto_spider.pipelines.CityDataBasePipeline': 500,
+    'autohome_spider.pipelines.PriceDataBasePipeline': 300,
+    'autohome_spider.pipelines.SpecDataBasePipeline': 400,
+    # 'autohome_spider.pipelines.CityDataBasePipeline': 500,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
