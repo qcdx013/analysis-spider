@@ -36,7 +36,7 @@ class Spec(Base):
 
 
 class City(Base):
-    __tablename__ = 't_citys'
+    __tablename__ = 't_citys_tmp'
 
     province_id = Column(String)
     province_name = Column(String)
