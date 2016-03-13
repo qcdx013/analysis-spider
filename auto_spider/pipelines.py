@@ -66,6 +66,9 @@ class CityDataBasePipeline(object):
 
     def open_spider(self, spider):
         Base.metadata.tables[City.__tablename__].create(checkfirst=True)
+        engine.execute(
+                'ALTER TABLE {0} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'.format(
+                        City.__tablename__))
 
     def process_item(self, item, spider):
         if not isinstance(item, CityItem):
@@ -109,6 +112,9 @@ class SpecDataBasePipeline(object):
 
     def open_spider(self, spider):
         Base.metadata.tables[Spec.__tablename__].create(checkfirst=True)
+        engine.execute(
+                'ALTER TABLE {0} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'.format(
+                        Spec.__tablename__))
 
     def process_item(self, item, spider):
         if not isinstance(item, SpecItem):
