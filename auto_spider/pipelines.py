@@ -65,7 +65,7 @@ class CityDataBasePipeline(object):
         self.count = BUF
 
     def open_spider(self, spider):
-        Base.metadata.tables[City.__tablename__].create()
+        Base.metadata.tables[City.__tablename__].create(checkfirst=True)
 
     def process_item(self, item, spider):
         if not isinstance(item, CityItem):
@@ -106,7 +106,7 @@ class SpecDataBasePipeline(object):
         self.count = BUF
 
     def open_spider(self, spider):
-        Base.metadata.tables[Spec.__tablename__].create()
+        Base.metadata.tables[Spec.__tablename__].create(checkfirst=True)
 
     def process_item(self, item, spider):
         if not isinstance(item, SpecItem):
