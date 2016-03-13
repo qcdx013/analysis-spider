@@ -7,7 +7,6 @@
 
 import re
 
-from pybloom import BloomFilter
 from sqlalchemy.orm import sessionmaker
 
 from items import CarPriceItem, SpecItem, CityItem
@@ -21,7 +20,7 @@ BUF = 100000
 # 存储到数据库
 class PriceDataBasePipeline(object):
     def __init__(self):
-        self.session = sessionmaker(bind=engine)
+        self.session = sessionmaker(bind=engine)()
         self.count = BUF
 
     def open_spider(self, spider):
@@ -62,7 +61,7 @@ class PriceDataBasePipeline(object):
 
 class CityDataBasePipeline(object):
     def __init__(self):
-        self.session = sessionmaker(bind=engine)
+        self.session = sessionmaker(bind=engine)()
         self.count = BUF
 
     def open_spider(self, spider):
@@ -72,6 +71,7 @@ class CityDataBasePipeline(object):
                 'ALTER TABLE {0} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'.format(
                         City.__tablename__))
         conn.execute('TRUNCATE TABLE {0}'.format(City.__tablename__))
+        conn.close()
 
     def process_item(self, item, spider):
         if not isinstance(item, CityItem):
@@ -97,19 +97,20 @@ class CityDataBasePipeline(object):
 
     def close_spider(self, spider):
         self.session.commit()
+        self.session.close()
 
-        if self.session.query(City).count() > 0:
-            # rename tables
-            conn = engine.connect()
-            conn.execute(
-                    'RENAME TABLE t_citys TO t_citys_000, {0} TO t_citys, t_citys_000 TO {0}'.format(
-                            City.__tablename__))
+        # rename tables
+        conn = engine.connect()
+        conn.execute(
+                'RENAME TABLE t_citys TO t_citys_000, {0} TO t_citys, t_citys_000 TO {0}'.format(
+                        City.__tablename__))
+        conn.close()
 
 
 class SpecDataBasePipeline(object):
     def __init__(self):
-        self.fingerprints = BloomFilter(10000, 0.00001)
-        self.session = sessionmaker(bind=engine)
+        self.fingerprints = set()
+        self.session = sessionmaker(bind=engine)()
         self.count = BUF
 
     def open_spider(self, spider):
@@ -119,6 +120,7 @@ class SpecDataBasePipeline(object):
                 'ALTER TABLE {0} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'.format(
                         Spec.__tablename__))
         conn.execute('TRUNCATE TABLE {0}'.format(Spec.__tablename__))
+        conn.close()
 
     def process_item(self, item, spider):
         if not isinstance(item, SpecItem):
@@ -154,12 +156,12 @@ class SpecDataBasePipeline(object):
 
     def close_spider(self, spider):
         self.session.commit()
-
-        if self.session.query(Spec).count() > 0:
-            # rename tables
-            conn = engine.connect()
-            conn.execute(
-                    'RENAME TABLE t_specs TO t_specs_000, {0} TO t_specs, t_specs_000 TO {0}'.format(
-                            Spec.__tablename__))
-
+        self.session.close()
         self.fingerprints = None
+
+        # rename tables
+        conn = engine.connect()
+        conn.execute(
+                'RENAME TABLE t_specs TO t_specs_000, {0} TO t_specs, t_specs_000 TO {0}'.format(
+                        Spec.__tablename__))
+        conn.close()
