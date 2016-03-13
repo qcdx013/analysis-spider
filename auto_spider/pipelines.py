@@ -7,70 +7,29 @@
 
 import re
 
-from scrapy.exceptions import DropItem
+from pybloom import BloomFilter
 
 from items import CarPriceItem, SpecItem, CityItem
 from model.auto_price import CarPrice, Spec, City
-from model.config import DBSession
-
-from model.config import r
+from model.config import DBSession, engine, metadata
 
 # 缓冲区大小，批量插入数据库
-BUF_SIZE_000 = 5000
+BUF = 100000
 
 
 # 存储到数据库
-class DataBasePipeline(object):
+class PriceDataBasePipeline(object):
     def __init__(self):
         self.session = DBSession()
-        self.count = BUF_SIZE_000
+        self.count = BUF
 
     def open_spider(self, spider):
         pass
 
-    def process_item_city(self, item):
-        c = City(
-                province_id=item['province_id'],
-                province_name=item['province_name'].encode('utf-8'),
-                province_first_letter=item['province_first_letter'].encode('utf-8'),
-                city_id=item['city_id'],
-                city_name=item['city_name'].encode('utf-8'),
-                city_first_letter=item['city_first_letter'].encode('utf-8'),
-        )
+    def process_item(self, item):
+        if not isinstance(item, CarPriceItem):
+            return item
 
-        self.session.add(c)
-        self.count -= 1
-
-        if self.count <= 0:
-            self.session.commit()
-            self.count = BUF_SIZE_000
-
-        return item
-
-    def process_item_spec(self, item):
-        s = Spec(
-                brand_id=item['brand_id'],
-                brand_name=item['brand_name'].encode('utf-8'),
-                brand_first_letter=item['brand_first_letter'].encode('utf-8'),
-                brand_img_url=item['brand_img_url'].encode('utf-8'),
-                fct_name=item['fct_name'].encode('utf-8'),
-                series_id=item['series_id'],
-                series_name=item['series_name'].encode('utf-8'),
-                series_img_url=item['series_img_url'].encode('utf-8'),
-                spec_id=item['spec_id'],
-                spec_name=item['spec_name'].encode('utf-8'),
-        )
-
-        self.session.add(s)
-        self.count -= 1
-
-        if self.count <= 0:
-            self.session.commit()
-            self.count = BUF_SIZE_000
-
-        return item
-
-    def process_item_car_price(self, item):
         price = item['price'].encode('utf-8')
         m = re.search(r'[0-9\.]+', price)
         price = m and float(m.group(0)) or 0.0
@@ -91,31 +50,102 @@ class DataBasePipeline(object):
 
         if self.count <= 0:
             self.session.commit()
-            self.count = BUF_SIZE_000
+            self.count = BUF
 
         return item
-
-    def process_item(self, item, spider):
-        if isinstance(item, SpecItem):
-            return self.process_item_spec(item)
-        elif isinstance(item, CarPriceItem):
-            return self.process_item_car_price(item)
-        elif isinstance(item, CityItem):
-            return self.process_item_city(item)
 
     def close_spider(self, spider):
         self.session.commit()
         self.session.close()
 
 
-# 车型去重
-class DuplicatesPipeline(object):
-    def process_item(self, item, spider):
+class CityDataBasePipeline(object):
+    def __init__(self):
+        self.session = DBSession()
+        self.count = BUF
+
+    def open_spider(self, spider):
+        metadata.create_all(tables=[City], checkfirst=True)
+
+    def process_item(self, item):
+        if not isinstance(item, CityItem):
+            return item
+
+        c = City(
+                province_id=item['province_id'],
+                province_name=item['province_name'].encode('utf-8'),
+                province_first_letter=item['province_first_letter'].encode('utf-8'),
+                city_id=item['city_id'],
+                city_name=item['city_name'].encode('utf-8'),
+                city_first_letter=item['city_first_letter'].encode('utf-8'),
+        )
+
+        self.session.add(c)
+        self.count -= 1
+
+        if self.count <= 0:
+            self.session.commit()
+            self.count = BUF
+
+        return item
+
+    def close_spider(self, spider):
+        self.session.commit()
+        self.session.close()
+
+        if City.query.count() > 0:
+            # rename tables
+            engine.execute('DROP TABLE t_citys')
+            engine.execute('ALTER TABLE {0} RENAME TO t_citys'.format(City.__tablename__))
+
+
+class SpecDataBasePipeline(object):
+    def __init__(self):
+        self.fingerprints = BloomFilter(10000, 0.00001)
+        self.session = DBSession()
+        self.count = BUF
+
+    def open_spider(self, spider):
+        metadata.create_all(tables=[Spec], checkfirst=True)
+
+    def process_item(self, item):
         if not isinstance(item, SpecItem):
             return item
 
-        if r.hset('spider:auto:duplicate:spec', item['spec_id'], '') == 1:
+        if item['spec_id'] in self.fingerprints:
+            # duplicate
             return item
 
-        pass  # ignore
-        # raise DropItem("Duplicate series found: {0}".format(sid))
+        s = Spec(
+                brand_id=item['brand_id'],
+                brand_name=item['brand_name'].encode('utf-8'),
+                brand_first_letter=item['brand_first_letter'].encode('utf-8'),
+                brand_img_url=item['brand_img_url'].encode('utf-8'),
+                fct_name=item['fct_name'].encode('utf-8'),
+                series_id=item['series_id'],
+                series_name=item['series_name'].encode('utf-8'),
+                series_img_url=item['series_img_url'].encode('utf-8'),
+                spec_id=item['spec_id'],
+                spec_name=item['spec_name'].encode('utf-8'),
+        )
+
+        self.fingerprints.add(item['spec_id'])
+
+        self.session.add(s)
+        self.count -= 1
+
+        if self.count <= 0:
+            self.session.commit()
+            self.count = BUF
+
+        return item
+
+    def close_spider(self, spider):
+        self.session.commit()
+        self.session.close()
+        self.fingerprints = None
+
+        if Spec.query.count() > 0:
+            # rename tables
+            engine.execute('DROP TABLE t_specs')
+            engine.execute('ALTER TABLE {0} RENAME TO t_specs'.format(Spec.__tablename__))

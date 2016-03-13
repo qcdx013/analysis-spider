@@ -66,9 +66,9 @@ DEFAULT_REQUEST_HEADERS = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    # 'auto_spider.pipelines.DuplicatesPipeline': 100,
-    # 'auto_spider.pipelines.JsonWriterPipeline': 200,
-    'auto_spider.pipelines.DataBasePipeline': 300,
+    # 'auto_spider.pipelines.PriceDataBasePipeline': 300,
+    'auto_spider.pipelines.SpecDataBasePipeline': 400,
+    # 'auto_spider.pipelines.CityDataBasePipeline': 500,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

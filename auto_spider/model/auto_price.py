@@ -5,7 +5,9 @@ import datetime
 from sqlalchemy import Column, String, Integer, Float, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
+from auto_spider.model.config import metadata
+
+Base = declarative_base(metadata=metadata)
 
 
 class CarPrice(Base):
@@ -19,7 +21,7 @@ class CarPrice(Base):
 
 
 class Spec(Base):
-    __tablename__ = 't_specs'
+    __tablename__ = 't_specs_tmp'
 
     brand_id = Column(String)
     brand_name = Column(String)

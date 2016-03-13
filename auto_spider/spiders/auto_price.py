@@ -34,24 +34,12 @@ class AutohomePriceSpider(CrawlSpider):
         for province in provinces:
             for city in province['citys']:
                 city_list.append(city)
-                # sometimes we needn't parse city items
-                # yield self.parse_item_city(city, province)
+                yield self.parse_item_city(city, province)
 
         url = 'http://223.99.255.20/app.api.autohome.com.cn/autov5.4.0/cars/brands-pm2-ts0.json'
 
         # 获取所有品牌
         yield scrapy.Request(url, callback=self.parse_brands, meta={'citys': city_list})
-
-    @staticmethod
-    def parse_item_city(city, province):
-        i = CityItem()
-        i['province_id'] = province['id']
-        i['province_name'] = province['name']
-        i['province_first_letter'] = province['firstletter']
-        i['city_id'] = city['id']
-        i['city_name'] = city['name']
-        i['city_first_letter'] = city['firstletter']
-        return i
 
     # 根据汽车品牌获取全部汽车型号
     def parse_brands(self, response):
@@ -68,10 +56,10 @@ class AutohomePriceSpider(CrawlSpider):
                 meta.update({'brand_id': bnd['id'], 'brand_name': bnd['name'],
                              'brand_first_letter': brand_first_letter, 'brand_img_url': bnd['imgurl']})
 
-                # 获取全部车型
+                # 获取全部车系
                 yield scrapy.Request(url, callback=self.parse_series, meta=meta)
 
-    # 根据汽车型号获取全部城市的详情
+    # 获取全部城市的车系详情
     def parse_series(self, response):
         fcts = json.loads(response.body_as_unicode())['result']['fctlist']
 
@@ -90,21 +78,30 @@ class AutohomePriceSpider(CrawlSpider):
                     url = 'http://223.99.255.20/app.api.autohome.com.cn/autov5.4.0/cars/' \
                           'seriessummary-pm2-s{0}-t0x000c-c{1}.json'.format(sis['id'], city['id'])
                     yield scrapy.Request(url, callback=self.parse_series_detail, meta=meta)
+                    break  # for test
 
     # 根据汽车详情页获取报价
     def parse_series_detail(self, response):
         meta = response.meta
-
         # 遍历所有型号，获取报价
         engines = json.loads(response.body_as_unicode())['result']['enginelist']
 
         for engine in engines:
             specs = engine['speclist']
-
             for spec in specs:
                 yield self.parse_item_price(meta, spec)
-                # sometimes we needn't parse spec items
-                # yield self.parse_item_spec(meta, spec)
+                yield self.parse_item_spec(meta, spec)
+
+    @staticmethod
+    def parse_item_city(city, province):
+        i = CityItem()
+        i['province_id'] = province['id']
+        i['province_name'] = province['name']
+        i['province_first_letter'] = province['firstletter']
+        i['city_id'] = city['id']
+        i['city_name'] = city['name']
+        i['city_first_letter'] = city['firstletter']
+        return i
 
     @staticmethod
     def parse_item_spec(meta, spec):
