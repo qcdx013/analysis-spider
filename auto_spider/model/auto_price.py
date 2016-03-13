@@ -21,7 +21,7 @@ class CarPrice(Base):
 
 
 class Spec(Base):
-    __tablename__ = 't_specs_tmp'
+    __tablename__ = 't_specs_backup'
 
     brand_id = Column(String(64))
     brand_name = Column(String(255))
@@ -36,7 +36,7 @@ class Spec(Base):
 
 
 class City(Base):
-    __tablename__ = 't_citys_tmp'
+    __tablename__ = 't_citys_backup'
 
     province_id = Column(String(64))
     province_name = Column(String(64))

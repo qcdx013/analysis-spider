@@ -69,6 +69,7 @@ class CityDataBasePipeline(object):
         engine.execute(
                 'ALTER TABLE {0} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'.format(
                         City.__tablename__))
+        engine.execute('TRUNCATE TABLE {0}'.format(City.__tablename__))
 
     def process_item(self, item, spider):
         if not isinstance(item, CityItem):
@@ -97,9 +98,9 @@ class CityDataBasePipeline(object):
 
         if self.session.query(City).count() > 0:
             # rename tables
-            engine.execute('DROP TABLE t_citys')
-            engine.execute('ALTER TABLE {0} RENAME TO t_citys'.format(City.__tablename__))
-            engine.execute('DROP TABLE {0}'.format(City.__tablename__))
+            engine.execute('RENAME TABLE t_citys TO t_citys_000')
+            engine.execute('RENAME TABLE {0} TO t_citys'.format(City.__tablename__))
+            engine.execute('RENAME TABLE t_citys_000 TO {0}'.format(Spec.__tablename__))
 
         self.session.close()
 
@@ -115,6 +116,7 @@ class SpecDataBasePipeline(object):
         engine.execute(
                 'ALTER TABLE {0} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'.format(
                         Spec.__tablename__))
+        engine.execute('TRUNCATE TABLE {0}'.format(Spec.__tablename__))
 
     def process_item(self, item, spider):
         if not isinstance(item, SpecItem):
@@ -153,9 +155,9 @@ class SpecDataBasePipeline(object):
 
         if self.session.query(Spec).count() > 0:
             # rename tables
-            engine.execute('DROP TABLE t_specs')
-            engine.execute('ALTER TABLE {0} RENAME TO t_specs'.format(Spec.__tablename__))
-            engine.execute('DROP TABLE {0}'.format(Spec.__tablename__))
+            engine.execute('RENAME TABLE t_specs TO t_specs_000')
+            engine.execute('RENAME TABLE {0} TO t_specs'.format(Spec.__tablename__))
+            engine.execute('RENAME TABLE t_specs_000 TO {0}'.format(Spec.__tablename__))
 
         self.session.close()
         self.fingerprints = None
