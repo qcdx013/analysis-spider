@@ -21,9 +21,9 @@ r = redis.StrictRedis(host='odachi.in', port=6379, db=9, password='2f454ebdd99d2
 BUFFER = 100000
 
 # 缓存前缀
-cache_prefix_trivial = 'flask:view//api/trivial.json'
-cache_prefix_province = 'flask:view//api/province*'
-cache_prefix_spec = 'flask:view//api/brand*', 'flask:view//api/series*'
+cache_prefix_trivial = ['flask:view//api/trivial.json']
+cache_prefix_province = ['flask:view//api/province*']
+cache_prefix_spec = ['flask:view//api/brand*', 'flask:view//api/series*']
 
 
 # 存储到数据库
@@ -67,7 +67,9 @@ class PriceDataBasePipeline(object):
         self.session.commit()
         self.session.close()
         # 清除缓存
-        r.delete(cache_prefix_trivial)
+        for key in cache_prefix_trivial:
+            keys = r.keys(key)
+            r.delete(keys)
 
 
 class CityDataBasePipeline(object):
@@ -111,7 +113,9 @@ class CityDataBasePipeline(object):
         engine.execute('RENAME TABLE t_citys TO t_citys_000, {0} TO t_citys, t_citys_000 TO {0}'.format(
                 City.__tablename__))
         # 清除缓存
-        r.delete(cache_prefix_province)
+        for key in cache_prefix_province:
+            keys = r.keys(key)
+            r.delete(keys)
 
 
 class SpecDataBasePipeline(object):
@@ -167,4 +171,6 @@ class SpecDataBasePipeline(object):
         engine.execute('RENAME TABLE t_specs TO t_specs_000, {0} TO t_specs, t_specs_000 TO {0}'.format(
                 Spec.__tablename__))
         # 清除缓存
-        r.delete(cache_prefix_spec)
+        for key in cache_prefix_spec:
+            keys = r.keys(key)
+            r.delete(keys)
