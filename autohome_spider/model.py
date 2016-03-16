@@ -7,7 +7,7 @@ from sqlalchemy import create_engine, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 
 # 初始化数据库连接
-engine = create_engine('mysql+mysqldb://analysis:pivotal@odachi.in:3306/analysis_db', encoding='utf-8')
+engine = create_engine('mysql+mysqldb://user:pwd@mysql:3306/db', encoding='utf-8')
 
 engine.execute('SET NAMES utf8mb4')
 engine.execute('SET CHARACTER SET utf8mb4')
