@@ -68,8 +68,8 @@ class PriceDataBasePipeline(object):
         self.session.close()
         # 清除缓存
         for key in cache_prefix_trivial:
-            keys = r.keys(key)
-            r.delete(keys)
+            ks = r.keys(key)
+            r.delete(*ks)
 
 
 class CityDataBasePipeline(object):
@@ -114,8 +114,8 @@ class CityDataBasePipeline(object):
                 City.__tablename__))
         # 清除缓存
         for key in cache_prefix_province:
-            keys = r.keys(key)
-            r.delete(keys)
+            ks = r.keys(key)
+            r.delete(*ks)
 
 
 class SpecDataBasePipeline(object):
@@ -172,5 +172,5 @@ class SpecDataBasePipeline(object):
                 Spec.__tablename__))
         # 清除缓存
         for key in cache_prefix_spec:
-            keys = r.keys(key)
-            r.delete(keys)
+            ks = r.keys(key)
+            r.delete(*ks)
