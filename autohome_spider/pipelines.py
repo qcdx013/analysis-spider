@@ -12,16 +12,25 @@ from sqlalchemy.orm import sessionmaker
 from items import CarPriceItem, SpecItem, CityItem
 from model import CarPrice, Spec, City, Base
 from model import engine
+import redis
+
+# 初始化redis数据库连接
+r = redis.StrictRedis(host='odachi.in', port=6379, db=9, password='2f454ebdd99d2996')
 
 # 缓冲区大小，批量插入数据库
-BUF = 100000
+BUFFER = 100000
+
+# 缓存前缀
+cache_prefix_trivial = 'flask:view//api/trivial.json'
+cache_prefix_province = 'flask:view//api/province*'
+cache_prefix_spec = 'flask:view//api/brand*', 'flask:view//api/series*'
 
 
 # 存储到数据库
 class PriceDataBasePipeline(object):
     def __init__(self):
         self.session = sessionmaker(bind=engine)()
-        self.count = BUF
+        self.count = BUFFER
 
     def open_spider(self, spider):
         pass
@@ -50,19 +59,21 @@ class PriceDataBasePipeline(object):
 
         if self.count <= 0:
             self.session.commit()
-            self.count = BUF
+            self.count = BUFFER
 
         return item
 
     def close_spider(self, spider):
         self.session.commit()
         self.session.close()
+        # 清除缓存
+        r.delete(cache_prefix_trivial)
 
 
 class CityDataBasePipeline(object):
     def __init__(self):
         self.session = sessionmaker(bind=engine)()
-        self.count = BUF
+        self.count = BUFFER
 
     def open_spider(self, spider):
         Base.metadata.tables[City.__tablename__].create(checkfirst=True)
@@ -88,7 +99,7 @@ class CityDataBasePipeline(object):
 
         if self.count <= 0:
             self.session.commit()
-            self.count = BUF
+            self.count = BUFFER
 
         return item
 
@@ -99,13 +110,15 @@ class CityDataBasePipeline(object):
         # rename tables
         engine.execute('RENAME TABLE t_citys TO t_citys_000, {0} TO t_citys, t_citys_000 TO {0}'.format(
                 City.__tablename__))
+        # 清除缓存
+        r.delete(cache_prefix_province)
 
 
 class SpecDataBasePipeline(object):
     def __init__(self):
         self.fingerprints = set()
         self.session = sessionmaker(bind=engine)()
-        self.count = BUF
+        self.count = BUFFER
 
     def open_spider(self, spider):
         Base.metadata.tables[Spec.__tablename__].create(checkfirst=True)
@@ -141,7 +154,7 @@ class SpecDataBasePipeline(object):
 
         if self.count <= 0:
             self.session.commit()
-            self.count = BUF
+            self.count = BUFFER
 
         return item
 
@@ -153,3 +166,5 @@ class SpecDataBasePipeline(object):
         # rename tables
         engine.execute('RENAME TABLE t_specs TO t_specs_000, {0} TO t_specs, t_specs_000 TO {0}'.format(
                 Spec.__tablename__))
+        # 清除缓存
+        r.delete(cache_prefix_spec)
